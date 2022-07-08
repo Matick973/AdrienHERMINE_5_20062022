@@ -8,12 +8,12 @@
     
   .catch((err) => {
     document.getElementById('items').innerHTML = '<h1>Erreur API</h1>';
-    console.log('erreur');                // Si Erreur afficher en HTML ET console
+    console.log('Erreur' + err);                // Si Erreur afficher en HTML ET console
 });
 
 function lesCanapesApi(data) {    //fonction pour contenir ma boucle, et afficher les données API
 
-  for (article of data){    //Boucle qui répète article tant qu'il y a des données dans l'API
+  for (let article of data){    //Boucle qui répète article tant qu'il y a des données dans l'API
 
     document.querySelector("#items").innerHTML += // innerHTML pour insérer du code HTML à la page index; "a href" qui redirige vers la page product.html
     `<a href="./product.html?_id=${article._id}">         
@@ -24,6 +24,5 @@ function lesCanapesApi(data) {    //fonction pour contenir ma boucle, et affiche
       </article>
     </a>`;
     
-    console.table(Array);
   };
 }
