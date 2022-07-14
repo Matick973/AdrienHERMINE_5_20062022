@@ -4,6 +4,7 @@
   .then((data) => {
     //console.table(data);
     lesCanapesApi(data);
+    console.log(data)
   })
     
   .catch((err) => {
