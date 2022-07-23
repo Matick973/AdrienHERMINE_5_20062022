@@ -4,7 +4,7 @@
   .then((data) => {
     //console.table(data);
     lesCanapesApi(data);
-    console.log(data)
+    console.table(data)
   })
     
   .catch((err) => {
