@@ -1,20 +1,3 @@
-
-
-fetch("http://localhost:3000/api/products/${product.id}")                           //accès API par produit et ciblage avec  "+ id" 
-.then((response) => response.json())
-.then((data) => { 
-    console.log(data)
-    arrayOfChosenProduct(data)
-})
-  
-.catch((err) => {
-  document.getElementById('cart__items').innerHTML = "<h1>Erreur d'accès au Panier</h1>";
-  console.log(err);                                              // Si Erreur afficher en HTML ET console
-});
-
-
-//----------------------------------------------- Fonction du Panier : ----------------------------------------------------//
-
 function saveCart(cart) {
     localStorage.setItem('cart', JSON.stringify(cart));
 };
@@ -30,6 +13,70 @@ function getCart(){
     // Créer un panier Vide si panier = 0
     // Sinon retour objet
 }
+
+//----------------------------------------------- Récupération panier + API : ----------------------------------------------------//
+let cart = getCart()
+
+cart.forEach((product) => { 
+    fetch("http://localhost:3000/api/products/")                           //accès API par produit et ciblage avec  "+ id" 
+    .then((response) => response.json())
+    .then((data) => {    
+        
+        let oneProduct = {}
+        for (let g = 0, h = data.length; g < h; g++) {
+            if (data[g]._id == product.id) {
+            
+                oneProduct = {
+                "id" : product.id,
+                "color" : product.color,
+                "quantity": product.quantity,
+                "price" : data[g].price,
+                "name" : data[g].name,
+                "img" : data[g].imageUrl,
+                "alt" : data[g].altTxt,}
+            
+                console.log(oneProduct)
+            
+            }
+        }
+        //displayProduct(oneProduct)
+
+    })
+
+    .catch((err) => {
+        document.getElementById('cart__items').innerHTML = "<h1>Erreur d'accès au Panier</h1>";
+        console.log(err);                                              // Si Erreur afficher en HTML ET console
+    });
+
+    function displayProduct(oneProduct) {                //fonction pour afficher les données API
+    
+        let productInCart = document.querySelector("#cart__items");
+        productInCart.innerHTML +=`<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
+        <div class="cart__item__img">
+          <img src="${data.imageUrl}" alt="${data.altTxt}">
+        </div>
+        <div class="cart__item__content">
+          <div class="cart__item__content__description">
+            <h2>${data.name}</h2>
+            <p>${product.color}</p>
+            <p>${data.price}</p>
+          </div>
+          <div class="cart__item__content__settings">
+            <div class="cart__item__content__settings__quantity">
+              <p>Qté : </p>
+              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}">
+            </div>
+            <div class="cart__item__content__settings__delete">
+              <p class="deleteItem">Supprimer</p>
+            </div>
+          </div>
+        </div>
+      </article> `;
+    }
+})
+
+
+//----------------------------------------------- Fonction du Panier : ----------------------------------------------------//
 
 function removeFromCart(product) {
     let cart = getCart()
@@ -85,46 +132,6 @@ function getTotalProduct() {
 )}
     // Vide le panier
 
-//----------------------------------------------- Affichage du Panier : ----------------------------------------------------//
-
-function arrayOfChosenProduct(product) {                                //fonction pour afficher les données API
-    
-    let cart = getCart()
-    
-    let matchCart = cart.filter(p => p.id == product.id && product.id == data_id);
-   
-    console.log(matchCart)
-    
-    
-
-    for (let product of cart){          
-
-        console.log(product) //Vérifie que la boucle fonctionne
-
-        let productInCart = document.querySelector("#cart__items");
-        productInCart.innerHTML +=`<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
-        <div class="cart__item__img">
-          <img src="${product.imageUrl}" alt="${product.altTxt}">
-        </div>
-        <div class="cart__item__content">
-          <div class="cart__item__content__description">
-            <h2>${product.name}</h2>
-            <p>${product.color}</p>
-            <p>${product.price}</p>
-          </div>
-          <div class="cart__item__content__settings">
-            <div class="cart__item__content__settings__quantity">
-              <p>Qté : </p>
-              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}">
-            </div>
-            <div class="cart__item__content__settings__delete">
-              <p class="deleteItem">Supprimer</p>
-            </div>
-          </div>
-        </div>
-      </article> `;
-    }
-}
 //----------------------------------------------- Gestion du Formulaire : ----------------------------------------------------//
 
 let customerInfo = []
@@ -164,6 +171,13 @@ document.getElementById('email').addEventListener('input', (data) =>{
 
 
 /*
+
+let cart = getCart()
+    
+    let matchCart = cart.filter(p => p.id == product.id && product.id == data_id);
+   
+    console.log(matchCart)
+
 function addCart(product) {
     let cart = getCart()
     let foundProduct = cart.find(p => p.id == product.id && p.color == product.color) ;
