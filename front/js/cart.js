@@ -27,20 +27,20 @@ cart.forEach((product) => {
             if (data[g]._id == product.id) {
             
                 oneProduct = {
-                "id" : product.id,
-                "color" : product.color,
-                "quantity": product.quantity,
-                "price" : data[g].price,
-                "name" : data[g].name,
-                "img" : data[g].imageUrl,
-                "alt" : data[g].altTxt,}
+                    "id" : product.id,
+                    "color" : product.color,
+                    "quantity": product.quantity,
+                    "price" : data[g].price,
+                    "name" : data[g].name,
+                    "img" : data[g].imageUrl,
+                    "alt" : data[g].altTxt,
+                }
             
                 console.log(oneProduct)
-            
+                cart.push(oneProduct)
             }
         }
-        //displayProduct(oneProduct)
-
+        displayProduct(oneProduct)
     })
 
     .catch((err) => {
@@ -53,13 +53,13 @@ cart.forEach((product) => {
         let productInCart = document.querySelector("#cart__items");
         productInCart.innerHTML +=`<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
         <div class="cart__item__img">
-          <img src="${data.imageUrl}" alt="${data.altTxt}">
+          <img src="${oneProduct.img}" alt="${oneProduct.altTxt}">
         </div>
         <div class="cart__item__content">
           <div class="cart__item__content__description">
-            <h2>${data.name}</h2>
-            <p>${product.color}</p>
-            <p>${data.price}</p>
+            <h2>${oneProduct.name}</h2>
+            <p>${oneProduct.color}</p>
+            <p>${oneProduct.price}€</p>
           </div>
           <div class="cart__item__content__settings">
             <div class="cart__item__content__settings__quantity">
@@ -97,28 +97,30 @@ function changeQuantity(product, quantity){
 }
 
 function getTotalProduct() {     
-        let cart = getCart()                           
-        totalProduct = 0;
-        for (let product of cart) { 
-            totalProduct += product.quantity;
-        }
-        return totalProduct;
-}
-    // Génère le nombre produit total
-    // Pour tout les produit de panier : Addition
-    
-    function getTotalPrice() {
-        let cart = getCart()                                                                                         
-        totalPrice = 0;
-        for (let product of cart) { 
-            totalPrice += product.quantity * product.price;
-        }
-        return totalPrice;
+    let cart = getCart()                           
+    totalProduct = 0;
+    for (let product of cart) { 
+        totalProduct += product.quantity;
     }
+    return totalProduct;
+}
+// Génère le nombre produit total
+// Pour tout les produit de panier : Addition
+document.getElementById('totalQuantity').insertAdjacentHTML("afterbegin", getTotalProduct());
+
+function getTotalPrice() {
+    let cart = getCart()                                                                                         
+    totalPrice = 0;
+    for (let product of cart) { 
+        totalPrice += product.quantity * product.price;
+    }
+    return totalPrice;
+}
     
-    // Génrère le prix total
-    // Pour tout les produis du panier Addition X Prix
-    
+// Génrère le prix total
+// Pour tout les produis du panier Addition X Prix
+document.getElementById('totalPrice').insertAdjacentHTML("afterbegin", getTotalPrice());
+
     function clearCart() {
         let cart = getCart()
         document.getElementById("order").addEventListener("click", function (e) {
