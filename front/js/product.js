@@ -50,13 +50,20 @@ let chosenProduct = {}     //variable pour stocker les infos produit sélectionn
     chosenProduct.quantity = chosenQuantity
 
     console.log(chosenQuantity)
-  })
+})
 
- 
+const popupConfirm = () => {
+  if( window.confirm('Ajouté au panier! Appuyer sur OK pour consulter le panier ou Annuler pour continuer vos achats')){
+    window.location.href = "/front/html/cart.html"
+  }else{
+    window.location.href = "/front/html/index.html"
+  }
+}
+
 // Bouton Validé
-  let btnAddToCart = document.getElementById('addToCart')
+let btnAddToCart = document.getElementById('addToCart')
 
-  btnAddToCart.addEventListener('click', function() {
+btnAddToCart.addEventListener('click', function() {
 
 
   if (chosenProduct.quantity < 1 || chosenProduct.quantity > 100 || chosenProduct.quantity === undefined || chosenProduct.color === "" || chosenProduct.color === undefined){
@@ -72,15 +79,17 @@ let chosenProduct = {}     //variable pour stocker les infos produit sélectionn
       if (foundProduct != undefined || foundProduct< 100) {
         foundProduct.quantity = foundProduct.quantity + chosenProduct.quantity;                             // Quantité incrémenté +1 si produit présent ou inférieur à 1
       } else {
-        chosenProduct.quantity;                          // Si produit présent ajouté produit X1
+        chosenProduct.quantity;                              // Si produit présent ajouté produit X1
         cart.push(chosenProduct)                             // Ajout produit au tableau
       }
      
       localStorage.setItem('cart', JSON.stringify(cart));   // Sauvegarde du panier 'cart'
 
       console.log(chosenProduct)                            // Vérification des objets envoyés
-      alert("Ajouté au Panier !")                           // Information au client 
+      //alert("Ajouté au Panier !")  
+      popupConfirm()                                        // Information au client 
     } 
     return SaveDataToLocalStorage(chosenProduct)            // Retour des données de l'execution de la fonction
   }
 })
+
