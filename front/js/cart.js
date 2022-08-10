@@ -23,11 +23,10 @@ function saveCart(cart) {
 };
 // Sauvegarde le panier en Json Stringify
 
-function getTotalProduct() {     
-    let cart = getCart()                           
+function getTotalProduct() {                                
     totalProduct = 0;
     for (let product of cart) { 
-        totalProduct += product.quantity;
+        totalProduct += parseInt(product.quantity);
     }
     return parseInt(totalProduct);
 }
@@ -37,14 +36,14 @@ document.getElementById('totalQuantity').insertAdjacentHTML("afterbegin", getTot
 
 function getTotalPrice(oneProduct) {
     let onePrice = oneProduct.quantity * oneProduct.price
-    console.log(onePrice)
+    //console.log(onePrice)
     totalPriceArray.push(onePrice)
 }
 
 function displayTotalPrice (){
     const initialValue = 0;
     let sumWithInitial = totalPriceArray.reduce((previousValue, currentValue) => previousValue + currentValue,initialValue);
-    console.log(sumWithInitial)
+    //console.log(sumWithInitial)
     document.getElementById('totalPrice').innerHTML = '';
     document.getElementById('totalPrice').insertAdjacentHTML("afterbegin", parseInt(sumWithInitial));
 }
@@ -52,43 +51,57 @@ function displayTotalPrice (){
 
 function removeFromCart(oneProduct) {
     let cart = getCart()
-    cart = cart.filter(p => p.id !== oneProduct.id && p.color !== oneProduct.color)
+    cart = cart.filter(p => p.id !== deleteProductId && p.color !== deleteProductColor)
     console.log(cart)
     saveCart(cart)
 }
 
-function removeOnClick(oneProduct){
+function removeOnClick(){
     let deleteBtn = document.querySelectorAll(".deleteItem");
 
     for (let j = 0; j < deleteBtn.length; j++){
+
+        let deleteProductId = cart[j].id;
+        
+        let deleteProductColor = cart[j].color;
+        
         deleteBtn[j].addEventListener("click" , (event) => {
-            removeFromCart(oneProduct)
+            cart = cart.filter(p => p.id !== deleteProductId || p.color !== deleteProductColor)
+
+            saveCart(cart)
+            
             alert("Ce produit a bien été supprimé du panier");
             location.reload();
         })
     } 
-    
 }
 
-/*function changeQuantity(oneProduct, quantity){
-    let cart = getCart()
+function changeQuantity(){
+    let changeInput = document.querySelectorAll('.itemQuantity')
 
-   //let modifiedValue = document.querySelectorAll('.itemQuantity.value')
-   //modifiedValue.addEventListener("click", (e) => {
-   //e.preventDefault()
-   //console.log("click")
-   let foundProduct = cart.find(p => p.id == oneProduct.id && p.color == oneProduct.color);
-   console.log(foundProduct)
-   if (foundProduct != undefined || foundProduct <= 100) {
-       foundProduct.quantity += quantity;
-   }if(foundProduct.quantity <= 0){
-       removeFromCart(foundProduct)
-       location.reload()
-   }else{
-       saveCart(cart)
-   }
-//});     
-}*/
+    for (let q = 0; q < changeInput.length; q++){
+
+        changeInput[q].addEventListener("change" , (event) => {
+            console.log('event', event)
+            console.log(cart[q])
+            
+            console.log(changeInput[q].value)
+
+            if (changeInput[q].value != undefined || changeInput[q].value <= 100) {
+                cart[q].quantity = changeInput[q].value;
+                saveCart(cart)
+                location.reload()
+            }else if(changeInput[q].value <= 0){
+                removeFromCart()
+                saveCart(cart[q])
+                
+            }else{
+                saveCart(cart[q])
+                location.reload()
+            }
+        });    
+    } 
+}
 
 function clearCart() {
     let cart = getCart()
@@ -132,11 +145,11 @@ fetch("http://localhost:3000/api/products/")
 
     getTotalPrice(oneProduct)
 
-    removeOnClick(oneProduct)
+    removeOnClick()
 
     displayTotalPrice()
 
-    //changeQuantity(oneProduct)
+    changeQuantity()
    
 })
 
@@ -179,15 +192,15 @@ function displayProduct(oneProduct) {
 
 let contact = {}
 
-function checkValidity(data){
-    let input = data.target.value
-    let errorMessage = input.nextElementSibling
-    if (input.value != '') {
-        errorMessage.innerHTML = ''
-    } else {
-        errorMessage.innerHTML = 'Renseignement obligatoire'
-    }
-}
+const ctrlRegexName = (value) =>{                                    //Regex autorisant Lettre Majuscule-Minuscule + Espace + tiret + virgule + entre 2 et 40 charactères (Ex: Nom Malgache = Andriantsimitoviaminandriandehibe ;  Prenom Chinois = Yu) https://regex101.com/
+    return /[a-zA-Z-+, éèàùµ]{2,40}/g.test(value)
+};                                                 
+const ctrlRegexAddress = (value) =>{                                //Regex '' + quelques caractères spéciaux et sans limitation du nombre de charactères
+    return /[a-zA-Z-0-9-+,+ +&é'è_ç^à°]/g.test(value)
+} ;
+const ctrlRegexEmail = (value) =>{                                  //Regex complexe SO
+    return /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/g.test(value)
+} ;  
 
 function getCustomerInfo(){
     let contact = localStorage.getItem('contact');
@@ -209,37 +222,102 @@ function saveCustomerInfo(contact) {
 function SaveDataCustomerToLocalStorage (){
 
     document.getElementById('firstName').addEventListener('input', (data) =>{
-        let firstName = data.target.value; 
+        
+        let firstName = data.target.value;
+        
         contact.firstName = firstName
-        firstName.insertRow
+
+        if (ctrlRegexName(firstName)){
+            firstName.insertRow
+            document.getElementById('firstName').style.backgroundColor = 'lightgreen'
+            document.getElementById('firstName').nextElementSibling.innerHTML = ''
+            return true
+        } else {
+            document.getElementById('firstName').style.backgroundColor = 'lightpink'
+            document.getElementById('firstName').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            return false
+        }
+        
         //console.log(firstName)
     })
     
     document.getElementById('lastName').addEventListener('input', (data) =>{
+       
         let lastName = data.target.value;
+        
         contact.lastName = lastName
-        lastName.insertRow
+        
+        if (ctrlRegexName(lastName)){
+            lastName.insertRow
+            document.getElementById('lastName').style.backgroundColor = 'lightgreen'
+            document.getElementById('lastName').nextElementSibling.innerHTML = ''
+            return true
+        } else {
+            document.getElementById('lastName').style.backgroundColor = 'lightpink'
+            document.getElementById('lastName').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            return false
+        }
+
         //console.log(lastName)
     })
     
     document.getElementById('address').addEventListener('input', (data) =>{
+        
         let address = data.target.value;
+        
         contact.address = address
-        address.insertRow
+        
+        if (ctrlRegexAddress(address)){
+            address.insertRow
+            document.getElementById('address').style.backgroundColor = 'lightgreen'
+            document.getElementById('address').nextElementSibling.innerHTML = ''
+            return true
+        } else {
+            document.getElementById('address').style.backgroundColor = 'lightpink'
+            document.getElementById('address').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            return false
+        }
+  
         //console.log(address)
     })
     
     document.getElementById('city').addEventListener('input', (data) =>{
+        
         let city = data.target.value; 
+        
         contact.city = city
-        city.insertRow
+        
+        if (ctrlRegexName(city)){
+            city.insertRow
+            document.getElementById('city').style.backgroundColor = 'lightgreen'
+            document.getElementById('city').nextElementSibling.innerHTML = ''
+            return true
+        } else {
+            document.getElementById('city').style.backgroundColor = 'lightpink'
+            document.getElementById('city').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            return false
+        }
+
         //console.log(city)
     })
     
     document.getElementById('email').addEventListener('input', (data) =>{
+        
         let email = data.target.value; 
+        
         contact.email = email
-        email.insertRow
+        
+        if (ctrlRegexEmail(email)){
+            email.insertRow
+            document.getElementById('email').style.backgroundColor = 'lightgreen'
+            document.getElementById('email').nextElementSibling.innerHTML = ''
+            return true
+        } else {
+            document.getElementById('email').style.backgroundColor = 'lightpink'
+            document.getElementById('email').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            return false
+        }
+        
         //console.log(email)
     })
       
@@ -266,8 +344,11 @@ console.log(order)
 let btnOrder = document.getElementById("order")
     btnOrder.addEventListener("click", (event)=>{
     event.preventDefault()
+
+    SaveDataCustomerToLocalStorage(contact)
     
-    const testViability = products.length !== 0 && Object.values(contact).every(x => x !== null && x !== '' && x !== undefined);
+    const testViability = products.length !== 0 && Object.keys(contact).length === 5 && Object.values(contact).every(x => x !== null && x !== '' && x !== undefined);
+
     console.log('testViability', testViability,)
     
     if (testViability){

@@ -480,4 +480,49 @@ const getLengthOfCustomerInfo = (customerInfo) => {
     console.log(lengthOfObject);
 }
 getLengthOfCustomerInfo()
+
+const testViability = products.length !== 0 && Object.values(contact).every(x => x !== null && x !== '' && x !== undefined)
+
+
+function changeQuantity(){
+    let changeInput = document.querySelectorAll('.itemQuantity')
+
+    for (let q = 0; q < changeInput.length; q++){
+
+        let quantityInInput = cart[q].quantity;
+        
+        let changeInputValue = changeInput[q].value;
+
+        changeInput[q].addEventListener("change" , (event) => {
+            
+            cart = cart.find(p => quantityInInput !== changeInputValue);
+ 
+            console.log(cart)
+            console.log(changeInput[q].value)
+            console.log('quantityInInput',quantityInInput)
+            console.log('changeInputValue',changeInputValue)
+
+            if (changeInputValue != undefined || changeInputValue <= 100) {
+                changeInputValue = quantityInInput;
+            }if(foundProduct.quantity <= 0){
+                removeFromCart()
+                location.reload()
+            }else{
+                saveCart(cart)
+                location.reload()
+            }
+        });     
+    }
+}
+
+function checkValidity(data){
+    let input = data.target.value
+    let errorMessage = input.nextElementSibling
+    if (input.value != '') {
+        errorMessage.innerHTML = ''
+    } else {
+        errorMessage.innerHTML = 'Renseignement obligatoire'
+    }
+}
+
 */ 
