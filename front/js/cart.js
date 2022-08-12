@@ -51,7 +51,7 @@ function displayTotalPrice (){
 
 function removeFromCart(oneProduct) {
     let cart = getCart()
-    cart = cart.filter(p => p.id !== deleteProductId && p.color !== deleteProductColor)
+    cart = cart.filter(p => p.id !== deleteProductId || p.color !== deleteProductColor)
     console.log(cart)
     saveCart(cart)
 }
@@ -82,21 +82,21 @@ function changeQuantity(){
     for (let q = 0; q < changeInput.length; q++){
 
         changeInput[q].addEventListener("change" , (event) => {
-            console.log('event', event)
-            console.log(cart[q])
-            
-            console.log(changeInput[q].value)
+            //console.log('event', event)
+            //console.log(cart[q])
+            //console.log(changeInput[q].value)
 
-            if (changeInput[q].value != undefined || changeInput[q].value <= 100) {
-                cart[q].quantity = changeInput[q].value;
+            if (changeInput[q].value <= 0 || changeInput[q].value > 100){
+                changeInput[q].value = 1
+                alert("Merci de renseigner une valeur comprise entre 1 et 100.\nPour supprimer le produit, cliquer sur 'Supprimer'")
                 saveCart(cart)
                 location.reload()
-            }else if(changeInput[q].value <= 0){
-                removeFromCart()
-                saveCart(cart[q])
-                
+            }else if (changeInput[q].value != undefined || changeInput[q].value <= 100) {
+                cart[q].quantity = changeInput[q].value;
+                saveCart(cart)
+                location.reload() 
             }else{
-                saveCart(cart[q])
+                saveCart(cart)
                 location.reload()
             }
         });    
@@ -193,13 +193,16 @@ function displayProduct(oneProduct) {
 let contact = {}
 
 const ctrlRegexName = (value) =>{                                    //Regex autorisant Lettre Majuscule-Minuscule + Espace + tiret + virgule + entre 2 et 40 charactères (Ex: Nom Malgache = Andriantsimitoviaminandriandehibe ;  Prenom Chinois = Yu) https://regex101.com/
-    return /[a-zA-Z-+, éèàùµ]{2,40}/g.test(value)
+    return /^[a-zA-Zéèàùµ\s-+,]{2,40}/i.test(value)
 };                                                 
 const ctrlRegexAddress = (value) =>{                                //Regex '' + quelques caractères spéciaux et sans limitation du nombre de charactères
-    return /[a-zA-Z-0-9-+,+ +&é'è_ç^à°]/g.test(value)
+    return /^[a-zA-Z-0-9-+,+ +&é'è_ç^à°]/g.test(value)
+} ;
+const ctrlRegexCity = (value) =>{                                   //Regex autorisant Lettre Majuscule-Minuscule + Espace + tiret + virgule + entre 1 et 40 charactères, (Ex: ville de "Y" et vile de "Saint-Germain-de-Tallevende-la-Lande-Vaumont")
+    return /^[a-zA-Z-+, éèàùµ]{1,40}/g.test(value)
 } ;
 const ctrlRegexEmail = (value) =>{                                  //Regex complexe SO
-    return /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/g.test(value)
+    return /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)/g.test(value)
 } ;  
 
 function getCustomerInfo(){
@@ -221,40 +224,38 @@ function saveCustomerInfo(contact) {
      
 function SaveDataCustomerToLocalStorage (){
 
-    document.getElementById('firstName').addEventListener('input', (data) =>{
+    document.getElementById('firstName').addEventListener('change', (data) =>{
         
         let firstName = data.target.value;
-        
-        contact.firstName = firstName
 
         if (ctrlRegexName(firstName)){
-            firstName.insertRow
+            contact.firstName = firstName
             document.getElementById('firstName').style.backgroundColor = 'lightgreen'
             document.getElementById('firstName').nextElementSibling.innerHTML = ''
             return true
         } else {
+            contact.firstName = ''
             document.getElementById('firstName').style.backgroundColor = 'lightpink'
-            document.getElementById('firstName').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            document.getElementById('firstName').nextElementSibling.innerHTML = 'Renseignement obligatoire (Exemple : Nicolas)'
             return false
         }
         
-        //console.log(firstName)
+        console.log(firstName)
     })
     
     document.getElementById('lastName').addEventListener('input', (data) =>{
        
         let lastName = data.target.value;
         
-        contact.lastName = lastName
-        
         if (ctrlRegexName(lastName)){
-            lastName.insertRow
+            contact.lastName = lastName
             document.getElementById('lastName').style.backgroundColor = 'lightgreen'
             document.getElementById('lastName').nextElementSibling.innerHTML = ''
             return true
         } else {
+            contact.lastName = ''
             document.getElementById('lastName').style.backgroundColor = 'lightpink'
-            document.getElementById('lastName').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            document.getElementById('lastName').nextElementSibling.innerHTML = 'Renseignement obligatoire (Exemple : Dupont)'
             return false
         }
 
@@ -265,16 +266,15 @@ function SaveDataCustomerToLocalStorage (){
         
         let address = data.target.value;
         
-        contact.address = address
-        
         if (ctrlRegexAddress(address)){
-            address.insertRow
+            contact.address = address
             document.getElementById('address').style.backgroundColor = 'lightgreen'
             document.getElementById('address').nextElementSibling.innerHTML = ''
             return true
         } else {
+            contact.address = ''
             document.getElementById('address').style.backgroundColor = 'lightpink'
-            document.getElementById('address').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            document.getElementById('address').nextElementSibling.innerHTML = 'Renseignement obligatoire (Exemple : 33, Rue des Marguerites 86045)'
             return false
         }
   
@@ -285,16 +285,15 @@ function SaveDataCustomerToLocalStorage (){
         
         let city = data.target.value; 
         
-        contact.city = city
-        
-        if (ctrlRegexName(city)){
-            city.insertRow
+        if (ctrlRegexCity(city)){
+            contact.city = city
             document.getElementById('city').style.backgroundColor = 'lightgreen'
             document.getElementById('city').nextElementSibling.innerHTML = ''
             return true
         } else {
+            contact.city = ''
             document.getElementById('city').style.backgroundColor = 'lightpink'
-            document.getElementById('city').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            document.getElementById('city').nextElementSibling.innerHTML = 'Renseignement obligatoire (Exemple : Celle-Lévescault)'
             return false
         }
 
@@ -305,16 +304,15 @@ function SaveDataCustomerToLocalStorage (){
         
         let email = data.target.value; 
         
-        contact.email = email
-        
         if (ctrlRegexEmail(email)){
-            email.insertRow
+            contact.email = email
             document.getElementById('email').style.backgroundColor = 'lightgreen'
             document.getElementById('email').nextElementSibling.innerHTML = ''
             return true
         } else {
+            contact.email = ''
             document.getElementById('email').style.backgroundColor = 'lightpink'
-            document.getElementById('email').nextElementSibling.innerHTML = 'Renseignement obligatoire'
+            document.getElementById('email').nextElementSibling.innerHTML = 'Renseignement obligatoire (Exemple : nicolas.dupont@yopmail.com)'
             return false
         }
         
