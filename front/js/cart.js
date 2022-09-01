@@ -49,13 +49,6 @@ function displayTotalPrice (){
 }
 // Génère un tableau totalPriceArray avec reduce pour obtenir le prix total
 
-function removeFromCart(oneProduct) {
-    let cart = getCart()
-    cart = cart.filter(p => p.id !== deleteProductId || p.color !== deleteProductColor)
-    console.log(cart)
-    saveCart(cart)
-}
-
 function removeOnClick(){
     let deleteBtn = document.querySelectorAll(".deleteItem");
 
@@ -224,7 +217,7 @@ function saveCustomerInfo(contact) {
      
 function SaveDataCustomerToLocalStorage (){
 
-    document.getElementById('firstName').addEventListener('change', (data) =>{
+    document.getElementById('firstName').addEventListener('input', (data) =>{
         
         let firstName = data.target.value;
 

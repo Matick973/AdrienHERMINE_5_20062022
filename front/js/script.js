@@ -1,6 +1,6 @@
-  fetch("http://localhost:3000/api/products/") //accès API général
+  fetch("http://localhost:3000/api/products/") //accès API général (Methode Get par défault)
 
-  .then((response) => response.json())
+  .then((response) => response.json())        
   .then((data) => {
     //console.table(data);
     lesCanapesApi(data);

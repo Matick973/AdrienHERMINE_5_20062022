@@ -524,5 +524,11 @@ function checkValidity(data){
         errorMessage.innerHTML = 'Renseignement obligatoire'
     }
 }
+function removeFromCart(oneProduct) {
+    let cart = getCart()
+    cart = cart.filter(p => p.id !== deleteProductId || p.color !== deleteProductColor)
+    console.log(cart)
+    saveCart(cart)
+}
 
 */ 
